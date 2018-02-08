@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.min.js"></script>
+</head>
+
+<body>
+	<div id="app"></div>
+	<script>
+		const name = "test";
+		const URL = "http://tutorial.briuin.com/frontend/session2/getsecret.php";
+		
+		new Vue({
+			el: "#app",
+			created(){
+				const params = "name="+name;
+				this.sendAjax("POST", params);
+			},
+			methods:{
+				sendAjax(method, params){
+					const request_url = method == "POST" ? URL : URL + "?" + params;
+					const xhr = new XMLHttpRequest();
+					xhr.open(method, request_url, true);
+					xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+					xhr.onload = (e) => { 					
+					    const {token, method, message} = JSON.parse(e.target.responseText);
+					    const new_params = "token=" + token;
+					    if(token)
+							this.sendAjax(method, new_params);
+						console.log(message);
+					};
+					
+					if(method == "POST")
+						xhr.send(params);
+					else
+						xhr.send();
+				}
+			}
+		});
+	</script>
+</body>
+</html>
