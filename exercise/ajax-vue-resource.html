@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <head>
 	<meta charset="utf-8">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.min.js"></script>
@@ -8,13 +9,70 @@
 <body>
 	<div id="app"></div>
 	<script>
-		const name = "";
+		const name = "Eric Lin";
 		const URL = "http://tutorial.briuin.com/frontend/session2/getsecret.php";
-		
+
 		new Vue({
 			el: "#app",
-			
+			data: {
+				myName: name
+			},
+			methods: {
+				getDataFirstTime() {
+					this.$http.post(URL, { name: this.myName }).then((response) => {
+						this.requestAfterSuccess(response);
+
+					}).catch((error) => {
+						this.requestAfterError(error);
+					})
+				},
+				post(para) {
+					this.$http.post(URL, { token: para }).then((response) => {
+						this.requestAfterSuccess(response);
+
+					}).catch((error) => {
+						this.requestAfterError(error);
+
+					})
+				},
+				get(para) {
+					this.$http.get(URL, { params: { token: para } }).then((response) => {
+						this.requestAfterSuccess(response);
+
+					}).catch((error) => {
+						this.requestAfterError(error);
+
+					})
+				},
+				requestAfterSuccess(response) {
+					console.log(response);
+					if (response.body.message != "complete") {
+						if (response.body.method == "GET") {
+							this.get(response.body.token);
+						}
+						if (response.body.method == "POST") {
+							this.post(response.body.token);
+						}
+					}
+				},
+				requestAfterError(error) {
+					console.log(error);
+					
+					if (error.body.message != "complete") {
+						if (error.body.method == "GET") {
+							this.get(error.body.token);
+						}
+						if (error.body.method == "POST") {
+							this.post(error.body.token);
+						}
+					}
+				}
+			},
+			mounted() {
+				this.getDataFirstTime();
+			}
 		});
 	</script>
 </body>
+
 </html>
